@@ -1,0 +1,17 @@
+{{ define "content" }}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2>{{ .Title }}</h2>
+            <p>Welcome to your plant management dashboard.</p>
+            <div class="list-group">
+                {{ range .Plants }}
+                <a href="#" class="list-group-item list-group-item-action">
+                    {{ .PlantName }} (Trefle ID: {{ .TrefleID }})
+                </a>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}
