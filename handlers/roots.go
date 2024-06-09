@@ -51,7 +51,7 @@ func ListRootsHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateRootHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
-        userID := 1 // Replace with actual logged-in user ID
+        userID := 1 // TODO: Replace with actual logged-in user ID
         title := r.FormValue("title")
         content := r.FormValue("content")
 
@@ -123,7 +123,7 @@ func ViewRootHandler(w http.ResponseWriter, r *http.Request) {
 func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
         rootID := chi.URLParam(r, "rootID")
-        userID := 1 // Replace with actual logged-in user ID
+        userID := 1 // TODO: Replace with actual logged-in user ID
         content := r.FormValue("content")
 
         _, err := models.DB.Exec("INSERT INTO comments (root_id, user_id, content, created_at) VALUES (?, ?, ?, ?)", rootID, userID, content, time.Now())

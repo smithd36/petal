@@ -12,8 +12,9 @@ func JWTAuth(next http.Handler) http.Handler {
         cookie, err := r.Cookie("token")
         if err != nil {
             if err == http.ErrNoCookie {
-                http.Error(w, "Missing token", http.StatusUnauthorized)
-                return
+                // Redirect to login page
+                http.Redirect(w, r, "/", http.StatusSeeOther)
+                return              
             }
             http.Error(w, err.Error(), http.StatusBadRequest)
             return

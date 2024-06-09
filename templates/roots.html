@@ -1,7 +1,9 @@
 {{ define "content" }}
-<div class="container mt-5">
-    <h1>Forum Roots</h1>
-    <a href="/roots/new" class="btn btn-primary mb-3">Create New Root</a>
+<div class="container">
+    <div class="mt-5 text-center">
+        <h1>Roots</h1>
+        <p>Public Plant Discussions</p>
+        <a href="/roots/new" class="btn btn-outline-success mb-3">Create New Root</a>
     <ul class="list-group">
         {{ range .Roots }}
         <li class="list-group-item">

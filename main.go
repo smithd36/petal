@@ -52,14 +52,14 @@ func main() {
     r.Post("/register", handlers.RegisterHandler)
     r.Get("/login", handlers.LoginHandler)
     r.Post("/login", handlers.LoginHandler)
+    r.Get("/roots/{rootID}", handlers.ViewRootHandler)
+    r.Get("/roots", handlers.ListRootsHandler)
 
     r.Group(func(r chi.Router) {
         r.Use(authMiddleware.JWTAuth)
         r.Get("/dashboard", handlers.DashboardHandler)
-        r.Get("/roots", handlers.ListRootsHandler)
         r.Get("/roots/new", handlers.CreateRootHandler)
         r.Post("/roots/new", handlers.CreateRootHandler)
-        r.Get("/roots/{rootID}", handlers.ViewRootHandler)
         r.Post("/roots/{rootID}/comments", handlers.CreateCommentHandler)
     })
 
