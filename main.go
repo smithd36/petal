@@ -3,14 +3,15 @@ package main
 import (
     "log"
     "net/http"
-    "os"
     "html/template"
 
-    "github.com/joho/godotenv"
     "github.com/go-chi/chi/v5"
     "github.com/go-chi/chi/v5/middleware"
+    "github.com/joho/godotenv"
     "github.com/smithd36/petal/handlers"
+    authMiddleware "github.com/smithd36/petal/middleware"
     "github.com/smithd36/petal/models"
+    "github.com/smithd36/petal/utils"
 )
 
 type PageData struct {
@@ -24,11 +25,8 @@ func main() {
         log.Printf("Error loading .env file")
     }
 
-    // Retrieve the API key from environment variables
-    apiKey := os.Getenv("TREFLE_API_KEY")
-    if apiKey == "" {
-        log.Fatal("TREFLE_API_KEY is not set in the environment")
-    }
+    // Initialize the JWT key
+    utils.InitializeJWTKey()
 
     models.InitDB()
 
@@ -54,13 +52,16 @@ func main() {
     r.Post("/register", handlers.RegisterHandler)
     r.Get("/login", handlers.LoginHandler)
     r.Post("/login", handlers.LoginHandler)
-    r.Get("/dashboard", handlers.DashboardHandler)
 
-    r.Get("/roots", handlers.ListRootsHandler)
-    r.Get("/roots/new", handlers.CreateRootHandler)
-    r.Post("/roots/new", handlers.CreateRootHandler)
-    r.Get("/roots/{rootID}", handlers.ViewRootHandler)
-    r.Post("/roots/{rootID}/comments", handlers.CreateCommentHandler)
+    r.Group(func(r chi.Router) {
+        r.Use(authMiddleware.JWTAuth)
+        r.Get("/dashboard", handlers.DashboardHandler)
+        r.Get("/roots", handlers.ListRootsHandler)
+        r.Get("/roots/new", handlers.CreateRootHandler)
+        r.Post("/roots/new", handlers.CreateRootHandler)
+        r.Get("/roots/{rootID}", handlers.ViewRootHandler)
+        r.Post("/roots/{rootID}/comments", handlers.CreateCommentHandler)
+    })
 
     // Serve static files
     fileServer := http.FileServer(http.Dir("./static"))

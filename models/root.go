@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Thread struct {
+type Root struct {
     ID        int
     UserID    int
     Title     string

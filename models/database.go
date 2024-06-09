@@ -40,7 +40,7 @@ func createTables() {
         log.Fatal(err)
     }
 
-	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS threads (
+	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS roots (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		user_id INTEGER,
 		title TEXT NOT NULL,
@@ -54,11 +54,11 @@ func createTables() {
 
 	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS comments (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		thread_id INTEGER,
+		root_id INTEGER,
 		user_id INTEGER,
 		content TEXT NOT NULL,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (thread_id) REFERENCES threads(id),
+		FOREIGN KEY (root_id) REFERENCES roots(id),
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	);`)
     if err != nil {

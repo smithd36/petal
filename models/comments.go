@@ -4,7 +4,7 @@ import "time"
 
 type Comment struct {
     ID        int
-    ThreadID  int
+    RootID  int
     UserID    int
     Content   string
     CreatedAt time.Time

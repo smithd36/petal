@@ -3,8 +3,10 @@ package handlers
 import (
     "log"
     "net/http"
+    "time"
     "html/template"
     "github.com/smithd36/petal/models"
+    "github.com/smithd36/petal/utils"
     "golang.org/x/crypto/bcrypt"
 )
 
@@ -80,6 +82,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
             http.Error(w, "Invalid credentials", http.StatusUnauthorized)
             return
         }
+
+        token, err := utils.GenerateJWT(username)
+        if err != nil {
+            log.Printf("Error generating token: %v", err)
+            http.Error(w, "Internal server error", http.StatusInternalServerError)
+            return
+        }
+
+        http.SetCookie(w, &http.Cookie{
+            Name:    "token",
+            Value:   token,
+            Expires: time.Now().Add(24 * time.Hour),
+        })
 
         http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
     }
