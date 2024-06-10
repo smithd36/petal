@@ -12,9 +12,8 @@ func JWTAuth(next http.Handler) http.Handler {
         cookie, err := r.Cookie("token")
         if err != nil {
             if err == http.ErrNoCookie {
-                // Redirect to login page
-                http.Redirect(w, r, "/", http.StatusSeeOther)
-                return              
+                http.Redirect(w, r, "/login", http.StatusSeeOther)
+                return
             }
             http.Error(w, err.Error(), http.StatusBadRequest)
             return
@@ -31,7 +30,9 @@ func JWTAuth(next http.Handler) http.Handler {
             return
         }
 
-        ctx := context.WithValue(r.Context(), "username", claims.Username)
+        // Store user ID and username in context
+        ctx := context.WithValue(r.Context(), "user_id", claims.UserID)
+        ctx = context.WithValue(ctx, "username", claims.Username)
         next.ServeHTTP(w, r.WithContext(ctx))
     })
 }

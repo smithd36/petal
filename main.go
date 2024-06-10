@@ -60,7 +60,7 @@ func main() {
         r.Get("/dashboard", handlers.DashboardHandler)
         r.Get("/roots/new", handlers.CreateRootHandler)
         r.Post("/roots/new", handlers.CreateRootHandler)
-        r.Post("/roots/{rootID}/comments", handlers.CreateCommentHandler)
+        r.Post("/roots/{rootID}/comments", handlers.AddCommentHandler)
     })
 
     // Serve static files

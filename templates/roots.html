@@ -1,13 +1,14 @@
 {{ define "content" }}
-<div class="container">
-    <div class="mt-5 text-center">
-        <h1>Roots</h1>
-        <p>Public Plant Discussions</p>
-        <a href="/roots/new" class="btn btn-outline-success mb-3">Create New Root</a>
+<div class="container mt-5 text-center">
+    <h1>Roots</h1>
+    <p>Public Plant Discussions</p>
+    <a href="/roots/new" class="btn btn-outline-success mb-3">Create New Root</a>
     <ul class="list-group">
         {{ range .Roots }}
         <li class="list-group-item">
             <a href="/roots/{{ .ID }}">{{ .Title }}</a>
+            <br>
+            <small class="text-muted">Posted by {{ .Username }}</small>
         </li>
         {{ end }}
     </ul>

@@ -69,7 +69,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         password := r.FormValue("password")
 
         var hashedPassword string
-        err := models.DB.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&hashedPassword)
+        var userID int
+        err := models.DB.QueryRow("SELECT id, password FROM users WHERE username = ?", username).Scan(&userID, &hashedPassword)
         if err != nil {
             log.Printf("Error fetching user: %v", err)
             http.Error(w, "Invalid credentials", http.StatusUnauthorized)
@@ -83,7 +84,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        token, err := utils.GenerateJWT(username)
+        token, err := utils.GenerateJWT(username, userID)
         if err != nil {
             log.Printf("Error generating token: %v", err)
             http.Error(w, "Internal server error", http.StatusInternalServerError)

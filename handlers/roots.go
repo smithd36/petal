@@ -4,6 +4,7 @@ import (
     "html/template"
     "net/http"
     "time"
+    "strconv"
 
     "github.com/go-chi/chi/v5"
     "github.com/smithd36/petal/models"
@@ -17,7 +18,11 @@ type RootsPageData struct {
 }
 
 func ListRootsHandler(w http.ResponseWriter, r *http.Request) {
-    rows, err := models.DB.Query("SELECT id, user_id, title, content, created_at FROM roots")
+    rows, err := models.DB.Query(`
+        SELECT roots.id, roots.user_id, users.username, roots.title, roots.content, roots.created_at
+        FROM roots
+        JOIN users ON roots.user_id = users.id
+    `)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -27,7 +32,7 @@ func ListRootsHandler(w http.ResponseWriter, r *http.Request) {
     var roots []models.Root
     for rows.Next() {
         var root models.Root
-        if err := rows.Scan(&root.ID, &root.UserID, &root.Title, &root.Content, &root.CreatedAt); err != nil {
+        if err := rows.Scan(&root.ID, &root.UserID, &root.Username, &root.Title, &root.Content, &root.CreatedAt); err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
         }
@@ -51,7 +56,7 @@ func ListRootsHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateRootHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
-        userID := 1 // TODO: Replace with actual logged-in user ID
+        userID := r.Context().Value("user_id").(int)
         title := r.FormValue("title")
         content := r.FormValue("content")
 
@@ -80,13 +85,13 @@ func ViewRootHandler(w http.ResponseWriter, r *http.Request) {
     rootID := chi.URLParam(r, "rootID")
 
     var root models.Root
-    err := models.DB.QueryRow("SELECT id, user_id, title, content, created_at FROM roots WHERE id = ?", rootID).Scan(&root.ID, &root.UserID, &root.Title, &root.Content, &root.CreatedAt)
+    err := models.DB.QueryRow("SELECT roots.id, roots.user_id, users.username, roots.title, roots.content, roots.created_at FROM roots JOIN users ON roots.user_id = users.id WHERE roots.id = ?", rootID).Scan(&root.ID, &root.UserID, &root.Username, &root.Title, &root.Content, &root.CreatedAt)
     if err != nil {
         http.Error(w, "Root not found", http.StatusNotFound)
         return
     }
 
-    rows, err := models.DB.Query("SELECT id, root_id, user_id, content, created_at FROM comments WHERE root_id = ?", rootID)
+    rows, err := models.DB.Query("SELECT comments.id, comments.root_id, comments.user_id, users.username, comments.content, comments.created_at FROM comments JOIN users ON comments.user_id = users.id WHERE comments.root_id = ?", rootID)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -96,7 +101,7 @@ func ViewRootHandler(w http.ResponseWriter, r *http.Request) {
     var comments []models.Comment
     for rows.Next() {
         var comment models.Comment
-        if err := rows.Scan(&comment.ID, &comment.RootID, &comment.UserID, &comment.Content, &comment.CreatedAt); err != nil {
+        if err := rows.Scan(&comment.ID, &comment.RootID, &comment.UserID, &comment.Username, &comment.Content, &comment.CreatedAt); err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
         }
@@ -114,24 +119,40 @@ func ViewRootHandler(w http.ResponseWriter, r *http.Request) {
         Root:     root,
         Comments: comments,
     }
-
     if err := tmpl.ExecuteTemplate(w, "base.html", data); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
     }
 }
 
-func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
+func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
-        rootID := chi.URLParam(r, "rootID")
-        userID := 1 // TODO: Replace with actual logged-in user ID
-        content := r.FormValue("content")
-
-        _, err := models.DB.Exec("INSERT INTO comments (root_id, user_id, content, created_at) VALUES (?, ?, ?, ?)", rootID, userID, content, time.Now())
+        rootIDStr := chi.URLParam(r, "rootID")
+        rootID, err := strconv.Atoi(rootIDStr)
         if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
+            http.Error(w, "Invalid root ID", http.StatusBadRequest)
             return
         }
-        http.Redirect(w, r, "/roots/"+rootID, http.StatusSeeOther)
-        return
+
+        userID, ok := r.Context().Value("user_id").(int)
+        if !ok {
+            http.Error(w, "User not authenticated", http.StatusUnauthorized)
+            return
+        }
+
+        content := r.FormValue("content")
+        if content == "" {
+            http.Error(w, "Content is required", http.StatusBadRequest)
+            return
+        }
+
+        // Insert the comment into the database
+        _, err = models.DB.Exec("INSERT INTO comments (root_id, user_id, content, created_at) VALUES (?, ?, ?, ?)", rootID, userID, content, time.Now())
+        if err != nil {
+            http.Error(w, "Failed to create comment", http.StatusInternalServerError)
+            return
+        }
+
+        // Redirect to the root view page
+        http.Redirect(w, r, "/roots/"+rootIDStr, http.StatusSeeOther)
     }
 }

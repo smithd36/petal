@@ -2,12 +2,14 @@
 <div class="container mt-5">
     <h1>{{ .Root.Title }}</h1>
     <p>{{ .Root.Content }}</p>
+    <p><small>Posted by {{ .Root.Username }} on {{ .Root.CreatedAt.Format "Jan 2, 2006 at 3:04pm" }}</small></p>
     <hr>
     <h2>Comments</h2>
     <ul class="list-group mb-3">
         {{ range .Comments }}
         <li class="list-group-item">
-            {{ .Content }}
+            <p>{{ .Content }}</p>
+            <small class="text-muted">Commented by {{ .Username }} on {{ .CreatedAt.Format "Jan 2, 2006 at 3:04pm" }}</small>
         </li>
         {{ end }}
     </ul>
