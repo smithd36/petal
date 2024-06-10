@@ -4,12 +4,50 @@
         <div class="col-md-8">
             <h2>{{ .Title }}</h2>
             <p>Welcome to your plant management dashboard.</p>
-            <div class="list-group">
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
+                Upload Image
+            </button>
+            <div class="list-group mb-3">
                 {{ range .Plants }}
                 <a href="#" class="list-group-item list-group-item-action">
                     {{ .PlantName }} (Trefle ID: {{ .TrefleID }})
                 </a>
                 {{ end }}
+            </div>
+
+            <!-- Image Gallery -->
+            <h3>Uploaded Images</h3>
+            {{ if .Message }}
+            <p>{{ .Message }}</p>
+            {{ else }}
+            <div class="row">
+                {{ range .Images }}
+                <div class="col-md-4 mb-3">
+                    <img src="{{ . }}" class="img-fluid img-thumbnail" alt="Uploaded image">
+                </div>
+                {{ end }}
+            </div>
+            {{ end }}
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadImageModalLabel">Upload Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/upload_image" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Choose Image</label>
+                        <input class="form-control" type="file" id="image" name="image" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success">Upload</button>
+                </form>
             </div>
         </div>
     </div>

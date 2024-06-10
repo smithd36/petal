@@ -1,16 +1,16 @@
 {{ define "content" }}
 <div class="container mt-5">
-    <h1>Create New Root (Forum Post)</h1>
+    <h1>Create New Root</h1>
     <form method="POST" action="/roots/new">
         <div class="form-group">
-            <label for="title">Add a Title</label>
+            <label for="title">Root Title</label>
             <input type="text" class="form-control" id="title" name="title" required>
         </div>
         <div class="form-group">
-            <label for="content">Add Main Content</label>
+            <label for="content">Root Content</label>
             <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
         </div>
-        <button type="submit" class="btn btn-success">Post</button>
+        <button type="submit" class="btn btn-success">Post Root</button>
     </form>
 </div>
 {{ end }}

@@ -1,0 +1,104 @@
+{{ define "title" }}About Petal 🌼{{ end }}
+
+{{ define "content" }}
+<main>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About Petal 🌼</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="display-4">Petal 🌼 (Dev Notes)</h1>
+            <p class="lead">Petal is a free, open-source progressive Ib app (PWA) designed for plant enthusiasts. With Petal, you can manage and track your plants, participate in plant-related discussions, and share images of your plants. My intent during developing this is just to keep it simple and fast. I hope you like it and find it useful. If you have any suggestions or feedback, please feel free to share it with me. I would love to hear from anyone, and welcome any contributions to this project via a branch and a PR.</p>
+
+            <h2 class="mt-5">Features</h2>
+            <ul class="list-group list-group-flush mb-5">
+                <li class="list-group-item"><strong>User Authentication:</strong> Secure login and registration using JWT tokens.</li>
+                <li class="list-group-item"><strong>Dashboard:</strong> Easily manage and track your plants.</li>
+                <li class="list-group-item"><strong>Image Uploads:</strong> Upload and view images of your plants.</li>
+                <li class="list-group-item"><strong>Discussion Forum:</strong> Join discussions, create posts (roots), and add comments.</li>
+                <li class="list-group-item"><strong>Progressive Web App (PWA):</strong> Installable on devices for a native app-like experience.</li>
+            </ul>
+
+            <h2>Tech Stack</h2>
+            <h3>Frontend:</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">HTML5</li>
+                <li class="list-group-item">Bootstrap 5</li>
+                <li class="list-group-item">JavaScript (with HTMX for dynamic content)</li>
+            </ul>
+            <h3>Backend:</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Go</li>
+                <li class="list-group-item">Chi router</li>
+                <li class="list-group-item">SQLite</li>
+            </ul>
+            <h3>Deployment:</h3>
+            <ul class="list-group list-group-flush mb-5">
+                <li class="list-group-item">Docker</li>
+                <li class="list-group-item">Caddy</li>
+            </ul>
+
+            <h2>Installation</h2>
+            <h3>Prerequisites</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="https://golang.org/doc/install" target="_blank">Go</a></li>
+                <li class="list-group-item"><a href="https://docs.docker.com/get-docker/" target="_blank">Docker</a></li>
+                <li class="list-group-item"><a href="https://caddyserver.com/docs/install" target="_blank">Caddy</a></li>
+            </ul>
+
+            <h3>Steps</h3>
+            <ol class="list-group list-group-numbered mb-5">
+                <li class="list-group-item"><strong>Clone the Repository:</strong>
+                    <pre><code>git clone https://github.com/smithd36/petal.git
+cd petal
+                    </code></pre>
+                </li>
+                <li class="list-group-item"><strong>Environment Variables:</strong> Create a <code>.env</code> file in the project root with the following content:
+                    <pre><code>JWT_KEY=your_secret_key
+                    </code></pre>
+                </li>
+                <li class="list-group-item"><strong>Build and Run with Docker:</strong>
+                    <pre><code>docker-compose up --build
+                    </code></pre>
+                </li>
+                <li class="list-group-item"><strong>Access the App:</strong> Open your browser and go to <code>http://localhost:8080</code>.</li>
+            </ol>
+
+            <h2>Usage</h2>
+            <h3>User Authentication</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Register:</strong> Go to <code>/register</code> to create a new account.</li>
+                <li class="list-group-item"><strong>Login:</strong> Go to <code>/login</code> to log into your account.</li>
+            </ul>
+
+            <h3>Dashboard</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Manage Plants:</strong> Add and track your plants on the dashboard.</li>
+                <li class="list-group-item"><strong>Upload Images:</strong> Upload images of your plants to your personal gallery.</li>
+            </ul>
+
+            <h3>Forum</h3>
+            <ul class="list-group list-group-flush mb-5">
+                <li class="list-group-item"><strong>Create Roots:</strong> Create new discussion posts (roots) on the forum.</li>
+                <li class="list-group-item"><strong>Add Comments:</strong> Comment on existing posts.</li>
+            </ul>
+
+            <h2>Contributing</h2>
+            <p>I welcome contributions! Please read our <a href="CONTRIBUTING.md">Contributing Guide</a> for more details.</p>
+
+            <h2>License</h2>
+            <p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p>
+
+            <h2>Contact</h2>
+            <p>For any inquiries or feedback, please contact us at <a href="mailto:your-email@example.com">your-email@example.com</a>.</p>
+        </div>
+
+        <div class="footer">
+            Thank you for using Petal! I hope it helps you in your plant management journey. 🌱
+        </div>
+    </body>
+</main>
+{{ end }}
