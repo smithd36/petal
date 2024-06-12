@@ -51,16 +51,12 @@ func main() {
 	// About route GET
 	r.Get("/about", handlers.AboutHandler)
 
-	// Register route GET
+	// Register route GET and POST
 	r.Get("/register", handlers.RegisterHandler)
-
-	// Register route POST
 	r.Post("/register", handlers.RegisterHandler)
 
-	// Login route GET
+	// Login route GET and POST
 	r.Get("/login", handlers.LoginHandler)
-
-	// Login route POST
 	r.Post("/login", handlers.LoginHandler)
 
 	// View a single root publicly viewable
@@ -80,12 +76,13 @@ func main() {
 
 		// For creating roots
 		r.Get("/roots/new", handlers.CreateRootHandler)
-
-		// For creating roots
 		r.Post("/roots/new", handlers.CreateRootHandler)
 
 		// For adding comments
 		r.Post("/roots/{rootID}/comments", handlers.AddCommentHandler)
+
+		// Searching plants
+		r.Get("/search_plants", handlers.SearchPlantHandler)
 	})
 
 	// Serve static files

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -43,27 +45,6 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Fetch plants for the user
-	rows, err := models.DB.Query("SELECT id, plant_name, trefle_id FROM plants WHERE user_id = ?", userIDInt)
-	if err != nil {
-		log.Printf("Error fetching plants: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	defer rows.Close()
-
-	plants := []models.Plant{}
-	for rows.Next() {
-		var plant models.Plant
-		err := rows.Scan(&plant.ID, &plant.PlantName, &plant.TrefleID)
-		if err != nil {
-			log.Printf("Error scanning plant: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-		plants = append(plants, plant)
-	}
-
 	// Fetch images from the user's directory
 	userDir := filepath.Join("static", "users", strconv.Itoa(userIDInt))
 	var images []string
@@ -94,7 +75,6 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := DashboardData{
 		Title:   "Dashboard",
-		Plants:  plants,
 		Images:  images,
 		Message: message,
 	}
@@ -118,7 +98,7 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the file from the form data
 	file, header, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Error retrieving the file", http.StatusBadRequest)
+		http.Error(w, "Error retrieving an image", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
@@ -165,4 +145,46 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to the dashboard
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
+type TrefleResponse struct {
+	Data []models.Plant `json:"data"`
+}
+
+func SearchPlantHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	if query == "" {
+		http.Error(w, "Query parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	apiKey := os.Getenv("TREFLE_API_KEY")
+	if apiKey == "" {
+		http.Error(w, "API key not set", http.StatusInternalServerError)
+		return
+	}
+
+	url := fmt.Sprintf("https://trefle.io/api/v1/plants/search?token=%s&q=%s", apiKey, query)
+	resp, err := http.Get(url)
+	if err != nil {
+		http.Error(w, "Failed to fetch data from Trefle API", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	var trefleResp TrefleResponse
+	if err := json.NewDecoder(resp.Body).Decode(&trefleResp); err != nil {
+		http.Error(w, "Failed to decode Trefle API response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	for _, plant := range trefleResp.Data {
+		fmt.Fprintf(w, `<button class="list-group-item list-group-item-action" onclick='selectPlant(%s)'>%s</button>`, plantToJSON(plant), plant.CommonName)
+	}
+}
+
+func plantToJSON(plant models.Plant) string {
+	plantJSON, _ := json.Marshal(plant)
+	return fmt.Sprintf("'%s'", string(plantJSON))
 }

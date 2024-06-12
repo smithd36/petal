@@ -4,9 +4,7 @@
         <div class="col-md-8">
             <h2>{{ .Title }}</h2>
             <p>Welcome to your plant management dashboard.</p>
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
-                Upload Image
-            </button>
+            <button class="btn btn-primary mb-3" onclick="showSearchPopup()">Add a Plant</button>
             <div class="list-group mb-3">
                 {{ range .Plants }}
                 <a href="#" class="list-group-item list-group-item-action">
@@ -30,26 +28,32 @@
             {{ end }}
         </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadImageModalLabel">Upload Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="/upload_image" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Choose Image</label>
-                        <input class="form-control" type="file" id="image" name="image" required>
-                    </div>
-                    <button type="submit" class="btn btn-outline-success">Upload</button>
-                </form>
+    <!-- Search Popup Modal -->
+    <div id="searchPopup" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Search for a Plant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input name="q" type="text" id="plantSearch" class="form-control" placeholder="Enter plant name" 
+                           hx-get="/search_plants" hx-trigger="keyup changed delay:500ms" hx-target="#results" hx-params="q">
+                    <div id="results" class="list-group mt-3"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function showSearchPopup() {
+        var searchPopup = new bootstrap.Modal(document.getElementById('searchPopup'), {
+            keyboard: false
+        });
+        searchPopup.show();
+    }
+</script>
+
 {{ end }}
